@@ -1,0 +1,38 @@
+
+* {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+}
+
+/* ---Header Styling - View Score Option and Time Display--- */
+header {
+    display: flex;
+    height: 100px;
+
+    background-color: honeydew;
+}
+
+/* ---Quiz Styling - Prompt and Responses--- */
+#game_display {
+    width: 40%;
+    min-width: fit-content;
+
+    margin: 0 auto;
+}
+
+.response_box {
+    padding: 0;
+}
+
+.response_bubble {
+    all: unset;
+    display: block;
+
+    background-color: aliceblue;
+    
+    padding: 20px;
+    margin: 5px auto;
+}

@@ -1,4 +1,32 @@
 
+// This is the existing parent element which the quiz related elements will be appended to
+const display_element = document.querySelector("#game_display");
+var question_responses = document.querySelector(".response_bubble");
+
+generateQuizStart();
+
+var timer = {
+    speed: 1000,    // Interval of time (ms)
+    duration: 75,   // Total time remaining (s)
+    sec_to_min() {
+        // Converting minutes and remaining seconds
+        if (this.duration >= 60) {
+            let minutes = parseInt(this.duration / 60);
+            let seconds = this.duration % 60;
+
+            return `${minutes}:${seconds}`;
+        } 
+        // The remaining time is only in seconds
+        else if (this.duration < 60 && this.duration > 0) {
+            return `${this.duration}`;
+        }
+        // No time remaining
+        else {
+            return "Time's up!";
+        }
+    }
+}
+
 class Question {
     constructor(prompt, responses, answer) {
         this.prompt = prompt;
@@ -11,9 +39,6 @@ class Question {
     }
 
     displayQuestion() {
-        // This is the existing parent element which the question elements will be appended to
-        let display_element = document.querySelector("#game_display");
-
         // Question Container to contain prompt, questions, and feedback message
         let q_container = document.createElement("section");
         q_container.setAttribute("id", "question_container");
@@ -26,10 +51,10 @@ class Question {
 
         // Element to hold the question responses as list items
         let r_box = document.createElement("ul");
+        r_box.setAttribute("id", "responses_box");
 
         // Generate each response option
         this.responses.forEach(element => {
-            console.log(element);
             let response = document.createElement("li");
             response.setAttribute("class", "response_bubble");
             response.innerHTML = element;
@@ -98,3 +123,61 @@ const questions = [
         )
 ];
 
+document.addEventListener('click', function(event) {
+    // Check that the clicked element is a response
+    if (event.target.className === "response_bubble") {
+        console.log("click!");
+    }
+});
+
+function quizHandler() {
+    // Clear the welcome message and all its contents
+    removeElement("quiz_start");
+    
+    setInterval( () => {
+
+    }, timer.speed
+    );
+
+    // Display the questions to the page
+    for (var i = 0 ; i < questions.length ; i++) {
+        questions[i].displayQuestion();
+    }
+}
+
+function generateQuizStart() {
+    // Quiz Start Container to contain heading, message, and quiz start button
+    let q_start = document.createElement("section");
+    q_start.setAttribute("id", "quiz_start");
+
+    // Create the welcome header to the container
+    let header = document.createElement("h1");
+    header.setAttribute("class", "question_prompt");
+    header.innerHTML = "Coding Quiz - Test your knowledge!";
+
+    // Create the welcome message
+    let message = document.createElement("p");
+    message.setAttribute("class", "message");
+    message.innerHTML = "The following quiz was designed to score you based on the number of correct responses. There is a time limit for the quiz, so try to give the correct answer and do it as quickly as you can!";
+
+    // Button element to start the quiz
+    let start_button = document.createElement("button");
+    start_button.setAttribute("type", "button");
+    start_button.setAttribute("id", "start_button");
+    start_button.setAttribute("onclick", "quizHandler()");
+    start_button.innerText = "Start Quiz";
+
+    // Append children to quiz start container
+    q_start.appendChild(header);
+    q_start.appendChild(message);
+    q_start.appendChild(start_button);
+
+    // Append quiz start to document
+    display_element.appendChild(q_start);
+}
+
+function removeElement(element_id) {
+    let element_to_remove = document.querySelector(`#${element_id}`);
+
+    element_to_remove.remove();
+}
