@@ -36,3 +36,7 @@ header {
     padding: 20px;
     margin: 5px auto;
 }
+
+.response_bubble:hover {
+    background-color: cornflowerblue;
+}

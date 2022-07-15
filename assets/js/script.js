@@ -3,30 +3,6 @@
 const display_element = document.querySelector("#game_display");
 var question_responses = document.querySelector(".response_bubble");
 
-generateQuizStart();
-
-var timer = {
-    speed: 1000,    // Interval of time (ms)
-    duration: 75,   // Total time remaining (s)
-    sec_to_min() {
-        // Converting minutes and remaining seconds
-        if (this.duration >= 60) {
-            let minutes = parseInt(this.duration / 60);
-            let seconds = this.duration % 60;
-
-            return `${minutes}:${seconds}`;
-        } 
-        // The remaining time is only in seconds
-        else if (this.duration < 60 && this.duration > 0) {
-            return `${this.duration}`;
-        }
-        // No time remaining
-        else {
-            return "Time's up!";
-        }
-    }
-}
-
 class Question {
     constructor(prompt, responses, answer) {
         this.prompt = prompt;
@@ -67,6 +43,34 @@ class Question {
         q_container.appendChild(r_box);
         display_element.appendChild(q_container);
 
+    }
+}
+
+generateQuizStart();
+
+var timer = {
+    speed: 1000,    // Interval of time (ms)
+    duration: 75,   // Total time remaining (s)
+    sec_to_min() {
+        // Converting minutes and remaining seconds
+        if (this.duration >= 60) {
+            let minutes = parseInt(this.duration / 60);
+            let seconds = this.duration % 60;
+
+            if (seconds < 10) {
+                seconds = `0${seconds}`;
+            }
+
+            return `${minutes}:${seconds}`;
+        } 
+        // The remaining time is only in seconds
+        else if (this.duration < 60 && this.duration > 0) {
+            return `${this.duration}`;
+        }
+        // No time remaining
+        else {
+            return "Time's up!";
+        }
     }
 }
 
@@ -123,6 +127,12 @@ const questions = [
         )
 ];
 
+var quiz_state = {
+    num_correct: 0,
+    get percent_score() { return `${(this.num_correct / questions.length) * 100}%`; },
+    user_initials: null
+};
+
 document.addEventListener('click', function(event) {
     // Check that the clicked element is a response
     if (event.target.className === "response_bubble") {
@@ -134,7 +144,14 @@ function quizHandler() {
     // Clear the welcome message and all its contents
     removeElement("quiz_start");
     
+    // Select the timer display element and set its value to the starting time duration
+    let timer_el = document.querySelector("#time_display");
+    timer_el.innerHTML = timer.sec_to_min();
+
     setInterval( () => {
+        // Decrement the time remaining by 1 sec and update the timer display
+        timer.duration--;
+        timer_el.innerHTML = timer.sec_to_min();
 
     }, timer.speed
     );
