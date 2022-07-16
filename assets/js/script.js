@@ -67,7 +67,8 @@ document.addEventListener('click', function(event) {
         if (q < questions.length) {
             questions[q].displayQuestion();
         } else {
-            // TODO: Add functionality to end quiz here
+            // Display final score
+            endQuiz();
         }
         
     }
@@ -91,7 +92,15 @@ function quizHandler() {
         if (timer.duration <= 0) {
             // No time remaining: stop the timer and end quiz
             clearInterval(time_remaining);
-            // TODO: Add functionality to end quiz here
+
+            // Clear the quiz display
+            removeElement("question_container");
+
+            // Display final score
+            endQuiz();
+        } else if (q >= questions.length) {
+            // No questions remaining: stop the timer
+            clearInterval(time_remaining);
         }
 
     }, timer.speed
@@ -113,10 +122,10 @@ function generateQuizStart() {
     let q_start = document.createElement("section");
     q_start.setAttribute("id", "quiz_start");
 
-    // Create the welcome header to the container
-    let header = document.createElement("h1");
-    header.setAttribute("class", "question_prompt");
-    header.innerHTML = "Coding Quiz - Test your knowledge!";
+    // Create the welcome heading
+    let heading = document.createElement("h1");
+    heading.setAttribute("class", "question_prompt");
+    heading.innerHTML = "Coding Quiz - Test your knowledge!";
 
     // Create the welcome message
     let message = document.createElement("p");
@@ -131,12 +140,57 @@ function generateQuizStart() {
     start_button.innerText = "Start Quiz";
 
     // Append children to quiz start container
-    q_start.appendChild(header);
+    q_start.appendChild(heading);
     q_start.appendChild(message);
     q_start.appendChild(start_button);
 
     // Append quiz start to document
     display_element.appendChild(q_start);
+}
+
+function endQuiz() {
+    // Clear question elements
+    // removeElement("question_container");
+
+    // Generate high score save screen container
+    let hs_container = document.createElement("section");
+    hs_container.setAttribute("id", "high_score_container");
+
+    // Create the high score heading
+    let heading = document.createElement("h1");
+    heading.setAttribute("class", "high_score_heading");
+    heading.innerHTML = "Finished!";
+
+    // Create the welcome message
+    let score = document.createElement("p");
+    score.setAttribute("class", "message");
+    score.innerHTML = `Your final score is ${quiz_state.num_correct} out of ${questions.length} (${quiz_state.percent_score})`;
+
+    // Create the user initials input field
+    let init_field = document.createElement("input");
+    init_field.setAttribute("id", "initials");
+
+    // Create the label for the initials input field
+    let init_label = document.createElement("label");
+    init_label.setAttribute("for", "initials");
+    init_label.innerText = "First and Last Initials";
+
+    // Button element to save high score
+    let shs_button = document.createElement("button");
+    shs_button.setAttribute("type", "button");
+    shs_button.setAttribute("id", "save_high_score");
+    shs_button.setAttribute("onclick", "saveScore()");
+    shs_button.innerText = "Save";
+
+    // Append children to high score save screen container
+    hs_container.appendChild(heading);
+    hs_container.appendChild(score);
+    hs_container.appendChild(init_label);
+    hs_container.appendChild(init_field);
+    hs_container.appendChild(shs_button);
+
+    // Append high score screen to document
+    display_element.appendChild(hs_container);
 }
 
 function removeElement(element_id) {
