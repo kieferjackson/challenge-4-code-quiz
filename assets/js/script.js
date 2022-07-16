@@ -7,6 +7,7 @@ generateQuizStart();
 
 var timer = {
     speed: 1000,    // Interval of time (ms)
+    def_dur: 75,    // Default timer duration
     duration: 75,   // Total time remaining (s)
     sec_to_min() {
         // Converting minutes and remaining seconds
@@ -73,18 +74,25 @@ document.addEventListener('click', function(event) {
 });
 
 function quizHandler() {
-    // Clear the welcome message and all its contents, and reset game state
+    // Clear the welcome message and all its contents, and reset game state/timer
     removeElement("quiz_start");
     quiz_state.num_correct = 0;
+    timer.duration = timer.def_dur;
     
     // Select the timer display element and set its value to the starting time duration
     let timer_el = document.querySelector("#time_display");
     timer_el.innerHTML = timer.sec_to_min();
 
-    setInterval( () => {
+    let time_remaining = setInterval( () => {
         // Decrement the time remaining by 1 sec and update the timer display
         timer.duration--;
         timer_el.innerHTML = timer.sec_to_min();
+
+        if (timer.duration <= 0) {
+            // No time remaining: stop the timer and end quiz
+            clearInterval(time_remaining);
+            // TODO: Add functionality to end quiz here
+        }
 
     }, timer.speed
     );
