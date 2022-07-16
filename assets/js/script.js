@@ -169,6 +169,8 @@ function endQuiz() {
     // Create the user initials input field
     let init_field = document.createElement("input");
     init_field.setAttribute("id", "initials");
+    init_field.setAttribute("minlength", "2");
+    init_field.setAttribute("maxlength", "2");
 
     // Create the label for the initials input field
     let init_label = document.createElement("label");
@@ -191,6 +193,18 @@ function endQuiz() {
 
     // Append high score screen to document
     display_element.appendChild(hs_container);
+}
+
+function saveScore() {
+    // Save the user's initials
+    let u_initials = document.querySelector("#initials").value;
+    quiz_state.user_initials = u_initials;
+
+    // Convert quiz state to stringified JSON object
+    json_qs = JSON.stringify(quiz_state);
+
+    // Save user score to local storage
+    localStorage.setItem(`${u_initials}_score`, json_qs);
 }
 
 function removeElement(element_id) {
