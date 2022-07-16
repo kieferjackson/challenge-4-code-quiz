@@ -3,6 +3,10 @@
     font-family: Helvetica, Arial, sans-serif;
 }
 
+code {
+    font-family: 'Courier New', Courier, monospace;
+}
+
 body {
     margin: 0;
 }
@@ -11,8 +15,13 @@ body {
 header {
     display: flex;
     height: 100px;
+    justify-items: center;
 
     background-color: honeydew;
+}
+
+.score_view, #time_display {
+    background-color: #fff;
 }
 
 /* ---Quiz Styling - Prompt and Responses--- */

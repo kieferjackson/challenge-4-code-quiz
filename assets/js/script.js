@@ -39,6 +39,11 @@ class Question {
             r_box.appendChild(response);
         });
 
+        // Create and append the feedback element to the container
+        let q_feedback = document.createElement("div");
+        q_feedback.setAttribute("class", "question_feedback");
+        q_container.appendChild(q_feedback);
+
         // Append the question responses to the container, and the container to the document
         q_container.appendChild(r_box);
         display_element.appendChild(q_container);
@@ -133,16 +138,44 @@ var quiz_state = {
     user_initials: null
 };
 
+// Index variable to access each question, incremented each time a response is chosen
+var q;
+
+// Listen for user's response to a quiz question
 document.addEventListener('click', function(event) {
     // Check that the clicked element is a response
     if (event.target.className === "response_bubble") {
-        console.log("click!");
+        let user_response = event.target.innerHTML;
+
+        // Evaluate if the user's chosen response is the correct answer
+        let r_correct = questions[q].checkAnswer(user_response);
+
+        // Update quiz state
+        if (r_correct) {
+            quiz_state.num_correct++;
+            console.log(`Question ${q + 1} was correct!`);
+        } else {
+            console.log(`Question ${q + 1} was incorrect...`);
+        }
+
+        // Clear question and prompts so that next question can be displayed
+        removeElement("question_container");
+
+        // Go to next possible question and display to page, and quiz if no more questions
+        q++;
+        if (q < questions.length) {
+            questions[q].displayQuestion();
+        } else {
+            // TODO: Add functionality to end quiz here
+        }
+        
     }
 });
 
 function quizHandler() {
-    // Clear the welcome message and all its contents
+    // Clear the welcome message and all its contents, and reset game state
     removeElement("quiz_start");
+    quiz_state.num_correct = 0;
     
     // Select the timer display element and set its value to the starting time duration
     let timer_el = document.querySelector("#time_display");
@@ -156,9 +189,14 @@ function quizHandler() {
     }, timer.speed
     );
 
-    // Display the questions to the page
-    for (var i = 0 ; i < questions.length ; i++) {
-        questions[i].displayQuestion();
+    // First index for questions array
+    q = 0;
+
+    // Display the first question to the page if it exists
+    if (questions.length > q) {
+        questions[q].displayQuestion();
+    } else {
+        console.log("No questions here.");
     }
 }
 
