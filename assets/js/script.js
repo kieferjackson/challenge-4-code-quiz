@@ -1,13 +1,14 @@
 
 // This is the existing parent element which the quiz related elements will be appended to
 const display_element = document.querySelector("#game_display");
+let timer_el = document.querySelector("#time_display");
 var question_responses = document.querySelector(".response_bubble");
 
 generateQuizStart();
 
 var timer = {
-    speed: 1000,    // Interval of time (ms)
-    def_dur: 75,    // Default timer duration
+    interval: 1000,    // Interval of time (ms)
+    def_dur: 75,    // Default timer duration (s)
     duration: 75,   // Total time remaining (s)
     sec_to_min() {
         // Converting minutes and remaining seconds
@@ -29,6 +30,32 @@ var timer = {
         else {
             return "Time's up!";
         }
+    },
+    start() {
+        let time_remaining = setInterval( () => {
+            // Decrement the time remaining by 1 sec and update the timer display
+            this.duration--;
+            timer_el.innerHTML = this.sec_to_min();
+    
+            if (this.duration <= 0) {
+                // No time remaining: stop the timer and end quiz
+                clearInterval(time_remaining);
+    
+                // Clear the quiz display
+                removeElement("question_container");
+    
+                // Display final score
+                endQuiz();
+            } else if (q >= questions.length) {
+                // No questions remaining: stop the timer
+                clearInterval(time_remaining);
+            }
+    
+        }, this.interval
+        );
+    },
+    reset() {
+        this.duration = this.def_dur;
     }
 }
 
@@ -75,36 +102,13 @@ document.addEventListener('click', function(event) {
 });
 
 function quizHandler() {
-    // Clear the welcome message and all its contents, and reset game state/timer
+    // Clear the welcome message and all its contents, and reset quiz state/timer
     removeElement("quiz_start");
     quiz_state.num_correct = 0;
-    timer.duration = timer.def_dur;
+    timer.reset();
     
-    // Select the timer display element and set its value to the starting time duration
-    let timer_el = document.querySelector("#time_display");
-    timer_el.innerHTML = timer.sec_to_min();
-
-    let time_remaining = setInterval( () => {
-        // Decrement the time remaining by 1 sec and update the timer display
-        timer.duration--;
-        timer_el.innerHTML = timer.sec_to_min();
-
-        if (timer.duration <= 0) {
-            // No time remaining: stop the timer and end quiz
-            clearInterval(time_remaining);
-
-            // Clear the quiz display
-            removeElement("question_container");
-
-            // Display final score
-            endQuiz();
-        } else if (q >= questions.length) {
-            // No questions remaining: stop the timer
-            clearInterval(time_remaining);
-        }
-
-    }, timer.speed
-    );
+    // Start the timer and decrement by 1 each completed interval
+    timer.start();
 
     // First index for questions array
     q = 0;
@@ -115,120 +119,4 @@ function quizHandler() {
     } else {
         console.log("No questions here.");
     }
-}
-
-function generateQuizStart() {
-    // Quiz Start Container to contain heading, message, and quiz start button
-    let q_start = document.createElement("section");
-    q_start.setAttribute("id", "quiz_start");
-
-    // Create the welcome heading
-    let heading = document.createElement("h1");
-    heading.setAttribute("class", "question_prompt");
-    heading.innerHTML = "Coding Quiz - Test your knowledge!";
-
-    // Create the welcome message
-    let message = document.createElement("p");
-    message.setAttribute("class", "message");
-    message.innerHTML = "The following quiz was designed to score you based on the number of correct responses. There is a time limit for the quiz, so try to give the correct answer and do it as quickly as you can!";
-
-    // Button element to start the quiz
-    let start_button = document.createElement("button");
-    start_button.setAttribute("type", "button");
-    start_button.setAttribute("id", "start_button");
-    start_button.setAttribute("onclick", "quizHandler()");
-    start_button.innerText = "Start Quiz";
-
-    // Append children to quiz start container
-    q_start.appendChild(heading);
-    q_start.appendChild(message);
-    q_start.appendChild(start_button);
-
-    // Append quiz start to document
-    display_element.appendChild(q_start);
-}
-
-function endQuiz() {
-    // Clear question elements
-    // removeElement("question_container");
-
-    // Generate high score save screen container
-    let hs_container = document.createElement("section");
-    hs_container.setAttribute("id", "high_score_container");
-
-    // Create the high score heading
-    let heading = document.createElement("h1");
-    heading.setAttribute("class", "high_score_heading");
-    heading.innerHTML = "Finished!";
-
-    // Create the welcome message
-    let score = document.createElement("p");
-    score.setAttribute("class", "message");
-    score.innerHTML = `Your final score is ${quiz_state.num_correct} out of ${questions.length} (${quiz_state.percent_score})`;
-
-    // Create the user initials input field
-    let init_field = document.createElement("input");
-    init_field.setAttribute("id", "initials");
-    init_field.setAttribute("minlength", "2");
-    init_field.setAttribute("maxlength", "2");
-
-    // Create the label for the initials input field
-    let init_label = document.createElement("label");
-    init_label.setAttribute("for", "initials");
-    init_label.innerText = "First and Last Initials";
-
-    // Button element to save high score
-    let shs_button = document.createElement("button");
-    shs_button.setAttribute("type", "button");
-    shs_button.setAttribute("id", "save_high_score");
-    shs_button.setAttribute("onclick", "saveScore()");
-    shs_button.innerText = "Save";
-
-    // Append children to high score save screen container
-    hs_container.appendChild(heading);
-    hs_container.appendChild(score);
-    hs_container.appendChild(init_label);
-    hs_container.appendChild(init_field);
-    hs_container.appendChild(shs_button);
-
-    // Append high score screen to document
-    display_element.appendChild(hs_container);
-}
-
-function saveScore() {
-    // Get the user's initials
-    let u_initials = document.querySelector("#initials").value;
-    let onlyAlphaChars = /[a-zA-Z]+$/.test(u_initials);
-    let twoCharsLong = u_initials.length === 2;
-
-    // User's initials are valid, save to local storage
-    if (onlyAlphaChars && twoCharsLong) {
-        // Update the quiz state object with the user's initials
-        quiz_state.user_initials = u_initials;
-
-        // Convert quiz state to stringified JSON object
-        json_qs = JSON.stringify(quiz_state);
-
-        // Save user score to local storage
-        localStorage.setItem(`${u_initials}_score`, json_qs);
-    }
-    // Not all characters were alphabetical, reject input
-    else if (!onlyAlphaChars) {
-        alert("Initials may only contain alphabetical characters.");
-    } 
-    // Less or more than two characters were entered, reject input
-    else if (!twoCharsLong) {
-        alert("Initials must be two characters long.");
-    } 
-    // Not all characters were alphabetical; the number of characters was invalid, reject input
-    else {
-        alert("Initials must contain only alphetical character and be two characters long.");
-    }
-    
-}
-
-function removeElement(element_id) {
-    let element_to_remove = document.querySelector(`#${element_id}`);
-
-    element_to_remove.remove();
 }
