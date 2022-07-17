@@ -95,6 +95,22 @@ ul {
     background-color: cornflowerblue;
 }
 
+/* ---Table Styling--- */
+table {
+    border: 1px solid black;
+    border-spacing: 0;
+    text-align: center;
+}
+
+th {
+    background: #ffb71d;
+    padding: 4px;
+}
+
+th, td {
+    border: 1px solid black;
+}
+
 @media screen and (max-width: 768px) {
     #game_display {
         width: 80%;

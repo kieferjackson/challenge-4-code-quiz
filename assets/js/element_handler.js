@@ -31,9 +31,6 @@ function generateQuizStart() {
 }
 
 function endQuiz() {
-    // Clear question elements
-    // removeElement("question_container");
-
     // Generate high score save screen container
     let hs_container = document.createElement("section");
     hs_container.setAttribute("id", "high_score_container");
@@ -109,9 +106,68 @@ function saveScore() {
     
 }
 
+function displayPreviousScores() {
+    // Check that scores are saved locally
+    if (localStorage.length > 0) {
+        // Generate previous scores table container
+        let pst_container = document.createElement("section");
+        pst_container.setAttribute("id", "previous_scores_container");
+
+        // Create the previous scores heading
+        let heading = document.createElement("h1");
+        heading.setAttribute("class", "previous_scores_heading");
+        heading.innerHTML = "Previous Scores";
+
+        // Create the previous scores table
+        let ps_table = document.createElement("table");
+
+        // Generate the table headings
+        let t_heading = document.createElement("tr");
+        let init_cell = document.createElement("th");
+        init_cell.innerText = "Initials";
+        let numcorrect_cell = document.createElement("th");
+        numcorrect_cell.innerText = "Correct Responses";
+        let pscore_cell = document.createElement("th");
+        pscore_cell.innerText = "Percent Score";
+
+        // Append heading cells table row, then row to table
+        t_heading.appendChild(init_cell);
+        t_heading.appendChild(numcorrect_cell);
+        t_heading.appendChild(pscore_cell);
+        ps_table.appendChild(t_heading);
+
+        // Generate the cells for each property
+        for (var i = 0 ; i < localStorage.length ; i++) {
+            // Get the key associated with a previous high score's initials
+            let ps_key = localStorage.key(i);
+            let ps_data = JSON.parse(localStorage[ps_key]);
+            
+            let user_row = document.createElement("tr");
+
+            let ui_cell = document.createElement("td");
+            ui_cell.innerText = ps_data["user_initials"];
+
+            let nc_cell = document.createElement("td");
+            nc_cell.innerText = ps_data["num_correct"];
+
+            let ps_cell = document.createElement("td");
+            ps_cell.innerText = ps_data["percent_score"];
+
+            // Append heading cells table row, then row to table
+            user_row.appendChild(ui_cell);
+            user_row.appendChild(nc_cell);
+            user_row.appendChild(ps_cell);
+            ps_table.appendChild(user_row);
+        }
+
+        // Append table to page
+        display_element.appendChild(ps_table);
+    }
+}
+
 function removeElement(element_id) {
     let element_to_remove = document.querySelector(`#${element_id}`);
-    debugger;
+    
     // Check that the element actually exists, and remove if so
     if (element_to_remove !== null) {
         element_to_remove.remove();
