@@ -196,15 +196,35 @@ function endQuiz() {
 }
 
 function saveScore() {
-    // Save the user's initials
+    // Get the user's initials
     let u_initials = document.querySelector("#initials").value;
-    quiz_state.user_initials = u_initials;
+    let onlyAlphaChars = /[a-zA-Z]+$/.test(u_initials);
+    let twoCharsLong = u_initials.length === 2;
 
-    // Convert quiz state to stringified JSON object
-    json_qs = JSON.stringify(quiz_state);
+    // User's initials are valid, save to local storage
+    if (onlyAlphaChars && twoCharsLong) {
+        // Update the quiz state object with the user's initials
+        quiz_state.user_initials = u_initials;
 
-    // Save user score to local storage
-    localStorage.setItem(`${u_initials}_score`, json_qs);
+        // Convert quiz state to stringified JSON object
+        json_qs = JSON.stringify(quiz_state);
+
+        // Save user score to local storage
+        localStorage.setItem(`${u_initials}_score`, json_qs);
+    }
+    // Not all characters were alphabetical, reject input
+    else if (!onlyAlphaChars) {
+        alert("Initials may only contain alphabetical characters.");
+    } 
+    // Less or more than two characters were entered, reject input
+    else if (!twoCharsLong) {
+        alert("Initials must be two characters long.");
+    } 
+    // Not all characters were alphabetical; the number of characters was invalid, reject input
+    else {
+        alert("Initials must contain only alphetical character and be two characters long.");
+    }
+    
 }
 
 function removeElement(element_id) {

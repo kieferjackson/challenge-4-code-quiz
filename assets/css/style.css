@@ -1,6 +1,16 @@
 
+:root {
+    --neon-mango: linear-gradient(225deg, #ffb71d 0%, rgb(250, 90, 16) 80%, rgb(219, 39, 123) 100%);
+    --standard-box-shadow: 0px 4px 8px 0px #bdbdbd67;
+    --inset-box-shadow: inset 0px 1px 5px 0px rgba(131, 131, 131, 0.1);
+}
+
 * {
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: 'Quicksand', Helvetica, Arial, sans-serif;
+}
+
+@keyframes bob {
+
 }
 
 code {
@@ -15,25 +25,60 @@ body {
 header {
     display: flex;
     height: 100px;
-    justify-items: center;
+    justify-content: space-around;
+    align-items: center;
 
-    background-color: honeydew;
+    box-shadow: var(--standard-box-shadow);
+    background: var(--neon-mango);
 }
 
 .score_view, #time_display {
-    background-color: #fff;
+    display: flex;
+    flex: 0 0 content;
+
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 5px;
 }
 
 /* ---Quiz Styling - Prompt and Responses--- */
 #game_display {
+    min-height: 100vh;
     width: 40%;
-    min-width: fit-content;
 
     margin: 0 auto;
 }
 
-.response_box {
+/* Quiz Start Styling - Welcome message and start quiz button */
+#quiz_start {
+    margin: 0 auto;
+}
+
+#quiz_start p {
+    text-align: justify;
+}
+
+button#start_button {
+    background: var(--neon-mango);
+    box-shadow: var(--standard-box-shadow);
+    border-radius: 3px;
+    font-weight: bold;
+
+    padding: 14px;
+    border: none;
+
+    cursor: pointer;
+}
+
+button#start_button:hover {
+    box-shadow: var(--inset-box-shadow);
+    transform: scale(1.05);
+}
+
+/* Quiz Section Styling - Prompts, Responses, and Feedback */
+ul {
     padding: 0;
+    list-style-type: none;
 }
 
 .response_bubble {
@@ -48,4 +93,10 @@ header {
 
 .response_bubble:hover {
     background-color: cornflowerblue;
+}
+
+@media screen and (max-width: 768px) {
+    #game_display {
+        width: 80%;
+    }
 }
