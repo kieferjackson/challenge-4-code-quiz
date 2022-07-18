@@ -6,6 +6,18 @@ var question_responses = document.querySelector(".response_bubble");
 
 generateQuizStart();
 
+var quiz_state = {
+    num_correct: 0,
+    current_question: 0,
+    get percent_score() { return `${(this.num_correct / questions.length) * 100}%`; },
+    user_initials: null,
+    reset() {
+        this.num_correct = 0;
+        this.current_question = 0;
+        this.user_initials = null;
+    }
+};
+
 var timer = {
     interval: 1000,    // Interval of time (ms)
     def_dur: 75,    // Default timer duration (s)
@@ -41,12 +53,15 @@ var timer = {
                 // No time remaining: stop the timer and end quiz
                 clearInterval(time_remaining);
     
-                // Clear the quiz display
-                removeElement("question_container");
+                // Check if results are displayed already, and clear the quiz display and end quiz if not
+                if (document.querySelector("#high_score_container") === null) {
+                    removeElement("question_container");
     
-                // Display final score
-                endQuiz();
-            } else if (q >= questions.length) {
+                    // Display final score
+                    endQuiz();
+                }
+                
+            } else if (quiz_state.current_question >= questions.length) {
                 // No questions remaining: stop the timer
                 clearInterval(time_remaining);
             }
@@ -59,20 +74,13 @@ var timer = {
     }
 }
 
-var quiz_state = {
-    num_correct: 0,
-    get percent_score() { return `${(this.num_correct / questions.length) * 100}%`; },
-    user_initials: null
-};
-
-// Index variable to access each question, incremented each time a response is chosen
-var q;
-
 // Listen for user's response to a quiz question
 document.addEventListener('click', function(event) {
     // Check that the clicked element is a response
     if (event.target.className === "response_bubble") {
         let user_response = event.target.innerHTML;
+
+        q = quiz_state.current_question;
 
         // Evaluate if the user's chosen response is the correct answer
         let r_correct = questions[q].checkAnswer(user_response);
@@ -90,9 +98,10 @@ document.addEventListener('click', function(event) {
         removeElement("question_container");
 
         // Go to next possible question and display to page, end quiz if no more questions
-        q++;
-        if (q < questions.length) {
-            questions[q].displayQuestion();
+        quiz_state.current_question++;
+
+        if (quiz_state.current_question < questions.length) {
+            questions[quiz_state.current_question].displayQuestion();
         } else {
             // Display final score
             endQuiz();
@@ -104,18 +113,15 @@ document.addEventListener('click', function(event) {
 function quizHandler() {
     // Clear the welcome message and all its contents, and reset quiz state/timer
     removeElement("quiz_start");
-    quiz_state.num_correct = 0;
+    quiz_state.reset();
     timer.reset();
     
     // Start the timer and decrement by 1 each completed interval
     timer.start();
 
-    // First index for questions array
-    q = 0;
-
     // Display the first question to the page if it exists
-    if (questions.length > q) {
-        questions[q].displayQuestion();
+    if (questions.length > 0) {
+        questions[quiz_state.current_question].displayQuestion();
     } else {
         console.log("No questions here.");
     }

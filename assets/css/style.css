@@ -41,6 +41,10 @@ header {
     border-radius: 5px;
 }
 
+.score_view {
+    cursor: pointer;
+}
+
 /* ---Quiz Styling - Prompt and Responses--- */
 #game_display {
     min-height: 100vh;
@@ -58,12 +62,13 @@ header {
     text-align: justify;
 }
 
-button#start_button {
+button {
     background: var(--neon-mango);
     box-shadow: var(--standard-box-shadow);
     border-radius: 3px;
     font-weight: bold;
 
+    margin-top: 10px;
     padding: 14px;
     border: none;
 

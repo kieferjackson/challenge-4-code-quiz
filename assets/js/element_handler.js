@@ -1,5 +1,16 @@
 
+function clearQuizDisplay() {
+    if (display_element.childElementCount > 0) {
+        for (var i = 0 ; i < display_element.childElementCount ; i++) {
+            removeElement(display_element.children[i].id);
+        }
+    }
+}
+
 function generateQuizStart() {
+    // Remove any elements preexisting in the display element
+    clearQuizDisplay();
+
     // Quiz Start Container to contain heading, message, and quiz start button
     let q_start = document.createElement("section");
     q_start.setAttribute("id", "quiz_start");
@@ -80,8 +91,11 @@ function saveScore() {
     let onlyAlphaChars = /[a-zA-Z]+$/.test(u_initials);
     let twoCharsLong = u_initials.length === 2;
 
-    // User's initials are valid, save to local storage
+    // User's initials are valid, clear score save screen, save to local storage, and display previous scores
     if (onlyAlphaChars && twoCharsLong) {
+        // Clear save screen
+        removeElement("high_score_container");
+
         // Update the quiz state object with the user's initials
         quiz_state.user_initials = u_initials;
 
@@ -90,6 +104,9 @@ function saveScore() {
 
         // Save user score to local storage
         localStorage.setItem(`${u_initials}_score`, json_qs);
+
+        // Display previous scores
+        displayPreviousScores();
     }
     // Not all characters were alphabetical, reject input
     else if (!onlyAlphaChars) {
@@ -109,6 +126,8 @@ function saveScore() {
 function displayPreviousScores() {
     // Check that scores are saved locally
     if (localStorage.length > 0) {
+        clearQuizDisplay()
+
         // Generate previous scores table container
         let pst_container = document.createElement("section");
         pst_container.setAttribute("id", "previous_scores_container");
@@ -117,6 +136,7 @@ function displayPreviousScores() {
         let heading = document.createElement("h1");
         heading.setAttribute("class", "previous_scores_heading");
         heading.innerHTML = "Previous Scores";
+        pst_container.appendChild(heading);
 
         // Create the previous scores table
         let ps_table = document.createElement("table");
@@ -160,8 +180,23 @@ function displayPreviousScores() {
             ps_table.appendChild(user_row);
         }
 
+        // Append table to previous scores container
+        pst_container.appendChild(ps_table);
+
+        // Create and append return to main menu button
+        rmm_button = document.createElement("button");
+        rmm_button.setAttribute("type", "button");
+        rmm_button.setAttribute("id", "return_to_menu");
+        rmm_button.setAttribute("onclick", "generateQuizStart()");
+        rmm_button.innerText = "Return to Main Menu";
+        pst_container.appendChild(rmm_button);
+
         // Append table to page
-        display_element.appendChild(ps_table);
+        display_element.appendChild(pst_container);
+    }
+    // No previous scores saved
+    else {
+        alert("No previous scores saved.");
     }
 }
 
